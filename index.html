@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <link rel="icon" href="Assets/favicon-modified.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid d-flex justify-content-between">
+            <span class="navbar-text" style="font-size: 20px; color: azure;">Timer ⌛</span>
+            <span id="datetime" class="navbar-text" style="font-size: 20px; color: azure;"></span>
+        </div>
+    </nav>
+    <div class="container text-center mt-5">
+        <h2 class="text-white mb-4">Countdown Timer</h2>
+        <!-- Preset Buttons -->
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="setPreset(1)">1 Minute</button>
+            <button class="preset-btn" onclick="setPreset(2)">2 Minutes</button>
+            <button class="preset-btn" onclick="setPreset(5)">5 Minutes</button>
+            <button class="preset-btn" onclick="setPreset(15)">15 Minutes</button>
+            <button class="preset-btn" onclick="setPreset(30)">30 Minutes</button>
+            <button class="preset-btn" onclick="setPreset(60)">1 Hour</button>
+        </div>
+
+        <!-- User Input -->
+        <div class="controls">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="days"> Days :</label>
+                        <input type="number" id="days" class="form-control" placeholder="eg.1 / 365" min="0">
+                        <label for="hours"> Hours :</label>
+                        <input type="number" id="hours" class="form-control" placeholder="eg.1 / 24" min="0" max="23">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="minutes"> Minutes :</label>
+                        <input type="number" id="minutes" class="form-control" placeholder="eg.1 / 60" min="0" max="59">
+                        <label for="seconds"> Seconds :</label>
+                        <input type="number" id="seconds" class="form-control" placeholder="eg.1 / 60" min="0" max="59">
+                    </div>
+
+                    <div class="w-100 btn_group">
+                        <button class="btn" onclick="startCountdown()" id="start">Start</button>
+                        <button class="btn" onclick="pauseCountdown()" id="pause">Pause</button>
+                        <button class="btn" onclick="resetCountdown()" id="reset">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Countdown Display -->
+        <div class="countdown-container">
+            <div class="progress-circle">
+                <svg>
+                    <circle cx="60" cy="60" r="54"></circle>
+                    <circle id="days-circle" cx="60" cy="60" r="54"></circle>
+                </svg>
+                <div class="countdown-text" id="days-display">00</div>
+                <small>Days</small>
+            </div>
+            <span style="padding-top: 35px; font-size: 34px;">:</span>
+            <div class="progress-circle">
+                <svg>
+                    <circle cx="60" cy="60" r="54"></circle>
+                    <circle id="hours-circle" cx="60" cy="60" r="54"></circle>
+                </svg>
+                <div class="countdown-text" id="hours-display">00</div>
+                <small>Hours</small>
+            </div>
+            <span style="padding-top: 35px; font-size: 34px;">:</span>
+            <div class="progress-circle">
+                <svg>
+                    <circle cx="60" cy="60" r="54"></circle>
+                    <circle id="minutes-circle" cx="60" cy="60" r="54"></circle>
+                </svg>
+                <div class="countdown-text" id="minutes-display">00</div>
+                <small>Minutes</small>
+            </div>
+            <span style="padding-top: 35px; font-size: 34px;">:</span>
+            <div class="progress-circle">
+                <svg>
+                    <circle cx="60" cy="60" r="54"></circle>
+                    <circle id="seconds-circle" cx="60" cy="60" r="54"></circle>
+                </svg>
+                <div class="countdown-text" id="seconds-display">00</div>
+                <small>Seconds</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        ⚠️ Time's up!
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,295 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Cedarville+Cursive&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Funnel+Display:wght@300..800&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&family=Karla:ital,wght@0,200..800;1,200..800&family=Lexend:wght@100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans+Mongolian&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Signika+Negative:wght@300..700&family=Smooch+Sans:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000000;
+    color: white;
+    min-height: 100vh;
+    font-family: "Space Grotesk", serif;
+    font-weight: 600;
+    transition: all 1s ease;
+    user-select: none;
+}
+
+nav {
+    background-color: #0f0f0f;
+    border: 1px solid #00217d;
+    border-top: none;
+    padding: 1rem;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    box-shadow: 0 0 15px #0044ff;
+    animation: slideDown 0.7s ease-out forwards;
+}
+
+.countdown-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.progress-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 0 10px #111111);
+}
+
+svg {
+    width: 120px;
+    height: 120px;
+    transform: rotate(-90deg) scale(1, -1);
+}
+
+circle {
+    fill: none;
+    stroke: #ffffff1a;
+    stroke-width: 10;
+    stroke-dasharray: 339;
+    stroke-linecap: round;
+}
+
+#days-circle {
+    stroke: #5f0975;
+}
+
+#hours-circle {
+    stroke: #0035c7;
+}
+
+#minutes-circle {
+    stroke: #409500;
+}
+
+#seconds-circle {
+
+    stroke: #c71414;
+}
+
+.progress-circle circle:nth-child(2) {
+    /* filter: drop-shadow(0 0 15px rgba(0, 169, 6, 0.5)); */
+    stroke-dashoffset: 339;
+    transition: stroke-dashoffset 0.5s linear;
+}
+
+.countdown-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    font-weight: bold;
+}
+
+small {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+.controls {
+    background: #ffffff2d;
+    border-radius: 10px;
+    border: 1px solid #041783;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 500px;
+    box-shadow: 0 0 20px #353535b3;
+}
+
+label {
+    display: block;
+    font-weight: 500;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    /* Ensures proper spacing */
+    gap: 15px;
+    opacity: 0;
+    animation: slideLeft 0.7s ease-out forwards;
+}
+
+label {
+    font-weight: 500;
+    color: white;
+    min-width: 80px;
+    /* Ensures consistent label width */
+    text-align: right;
+}
+
+.form-control {
+    min-width: 115px;
+    flex: 1;
+    background: #ffffff1a;
+    border: 1px solid #ffffff33;
+    color: white;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+@keyframes slideLeft {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.form-control:focus {
+    background-color: #06031e6d;
+    border: 1px solid #98959588;
+    outline: none;
+    color: #ffffff;
+    box-shadow: 0 5px 10px #00000033;
+}
+
+.form-control::placeholder {
+    color: #ffffff99;
+    font-style: italic;
+}
+
+/* Responsive Fixes */
+@media (max-width: 600px) {
+    .form-group {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    label {
+        text-align: left;
+    }
+}
+
+
+
+.btn_group {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    animation: slideRight 0.7s ease-out forwards;
+}
+
+@keyframes slideRight {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+#start,
+#pause,
+#reset {
+    background-color: #12026e97;
+    border: 1px solid #2d16d6;
+    border-radius: 18px;
+    color: #fff;
+    padding: 6px 20px;
+    font-size: 17px;
+    transition: all .5s ease-in-out;
+
+    &:hover {
+        background-color: #e300001a;
+        color: #d11616;
+        border: 1px solid #f10e0ed7;
+        box-shadow: 0 5px 5px #000000;
+    }
+}
+
+#pause:hover {
+    background-color: #07440a25;
+    color: #00a008;
+    border: 1px solid #00a008;
+}
+
+#reset:hover {
+    background-color: #ff480025;
+    color: #ff4d00;
+    border: 1px solid #ca3f04;
+}
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    background: #cc111180;
+    color: #fff;
+    border: 1px solid #da0202e6;
+    border-radius: 5px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: slideDown 0.7s ease-out forwards;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.preset-btn {
+    background: #ffffff1a;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    color: white;
+    transition: all 0.3s ease;
+    outline: 1px solid #ffffff33;
+}
+
+.preset-btn:hover {
+    background: #12026e97;
+    outline-color: #2d16d6;
+}
