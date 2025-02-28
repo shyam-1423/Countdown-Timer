@@ -1,10 +1,11 @@
-let countdownInterval; // Variable to store the countdown interval
-let isPaused = false;  // Flag to check if the countdown is paused
-let remainingTime = 0; // Variable to store the remaining time in seconds
-let initialTime = 0;   // Store the initial time for reference
-let colorChangeInterval; // Interval to change the background color periodically
+let countdownInterval = null;
+let colorChangeInterval = null;
+let isPaused = false;
+let remainingTime = 0;    // Time in milliseconds
+let startTime = 0;        // When countdown started
+let pauseTime = 0;        // When countdown was paused
+let initialTime = 0;      // Initial total time for progress calculations
 
-// Array of dark colors to change the background
 const darkColors = [
     '#040414',
     '#020113',
@@ -12,184 +13,181 @@ const darkColors = [
     '#041005',
     '#0a0a1b'
 ];
+let currentColorIndex = 0;
 
-let currentColorIndex = 0; // Index to track the current color for background
-
-// Function to change the background color at regular intervals
+// Function to change background color
 function changeBackgroundColor() {
     if (!isPaused && remainingTime > 0) {
-        // Cycle through dark colors
         currentColorIndex = (currentColorIndex + 1) % darkColors.length;
-        document.body.style.background = darkColors[currentColorIndex];
+        document.body.style.backgroundColor = darkColors[currentColorIndex];
     }
 }
 
-// Function to set the countdown preset time (in minutes)
+// Set preset time
 function setPreset(minutes) {
-    resetCountdown(); // Reset the previous countdown settings
-    document.getElementById("days").value = "0"; // Reset days field
-    document.getElementById("hours").value = "0"; // Reset hours field
-    document.getElementById("minutes").value = minutes.toString(); // Set preset minutes
-    document.getElementById("seconds").value = "0"; // Reset seconds field
-    startCountdown(); // Start the countdown
+    resetCountdown();
+    document.getElementById("days").value = "0";
+    document.getElementById("hours").value = "0";
+    document.getElementById("minutes").value = minutes.toString();
+    document.getElementById("seconds").value = "0";
+    startCountdown();
 }
 
-// Function to start the countdown timer
+// Start or resume countdown
 function startCountdown() {
-    // **Fix: Ensure only one countdown runs at a time**
-    clearInterval(countdownInterval); // Clear any existing countdown interval
-    clearInterval(colorChangeInterval); // Clear color change interval
+    const days = parseInt(document.getElementById("days").value) || 0;
+    const hours = parseInt(document.getElementById("hours").value) || 0;
+    const minutes = parseInt(document.getElementById("minutes").value) || 0;
+    const seconds = parseInt(document.getElementById("seconds").value) || 0;
 
-    // Get values from input fields and convert to integers
-    let days = parseInt(document.getElementById("days").value) || 0;
-    let hours = parseInt(document.getElementById("hours").value) || 0;
-    let minutes = parseInt(document.getElementById("minutes").value) || 0;
-    let seconds = parseInt(document.getElementById("seconds").value) || 0;
+    // If starting fresh (not resuming from pause)
+    if (!isPaused && remainingTime === 0) {
+        remainingTime = (days * 86400000) + (hours * 3600000) + (minutes * 60000) + (seconds * 1000);
+        initialTime = remainingTime;
 
-    // Check if any time is set
-    if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
-        alert("Please set a time value greater than 0");
-        return;
+        if (remainingTime <= 0) {
+            alert("Please set a time value greater than 0");
+            return;
+        }
     }
 
-    // Convert the time to seconds
-    remainingTime = (days * 86400) + (hours * 3600) + (minutes * 60) + seconds;
-    initialTime = remainingTime; // Store initial time for progress calculation
+    // Clear existing intervals
+    if (countdownInterval) clearInterval(countdownInterval);
+    if (colorChangeInterval) clearInterval(colorChangeInterval);
 
-    // Start the background color change every 5 seconds
+    startTime = Date.now() - (pauseTime ? (pauseTime - startTime) : 0);
+    isPaused = false;
+
+    countdownInterval = setInterval(updateTimer, 50);
     colorChangeInterval = setInterval(changeBackgroundColor, 5000);
-    isPaused = false; // Set paused to false
-    updateTimer(); // Update the timer display
-    countdownInterval = setInterval(updateTimer, 1000); // Update the timer every second
+    updateTimer(); // Immediate update
 }
 
-// Function to pause the countdown
+// Pause countdown
 function pauseCountdown() {
-    isPaused = true; // Set paused to true
-    clearInterval(countdownInterval); // Stop the countdown interval
+    if (!isPaused && remainingTime > 0) {
+        isPaused = true;
+        pauseTime = Date.now();
+        clearInterval(countdownInterval);
+        clearInterval(colorChangeInterval);
+    }
 }
 
-// Function to reset the countdown
+// Reset countdown
 function resetCountdown() {
-    clearInterval(countdownInterval); // Clear countdown interval
-    clearInterval(colorChangeInterval); // Clear color change interval
-    isPaused = false; // Reset pause flag
-    remainingTime = 0; // Reset remaining time
-    initialTime = 0; // Reset initial time
+    if (countdownInterval) clearInterval(countdownInterval);
+    if (colorChangeInterval) clearInterval(colorChangeInterval);
 
-    // Reset background color
-    document.body.style.background = darkColors[0];
-    currentColorIndex = 0; // Reset background color index
+    isPaused = false;
+    remainingTime = 0;
+    startTime = 0;
+    pauseTime = 0;
+    initialTime = 0;
+    currentColorIndex = 0;
 
-    // Reset all input fields
+    document.body.style.backgroundColor = darkColors[0];
+
     document.getElementById("days").value = "";
     document.getElementById("hours").value = "";
     document.getElementById("minutes").value = "";
     document.getElementById("seconds").value = "";
 
-    // Reset the display and progress circles
     updateDisplay(0, 0, 0, 0);
     updateAllProgress(0);
 }
 
-// Function to update the timer display
+// Update timer display
 function updateTimer() {
+    if (isPaused) return;
+
+    remainingTime = Math.max(0, startTime + initialTime - Date.now());
+
     if (remainingTime <= 0) {
-        // If the countdown reaches 0, stop the intervals and show notification
         clearInterval(countdownInterval);
         clearInterval(colorChangeInterval);
         showNotification();
-        updateDisplay(0, 0, 0, 0);
-        updateAllProgress(0);
-        document.body.style.background = darkColors[0];
+        resetCountdown();
         return;
     }
 
-    // Calculate remaining days, hours, minutes, and seconds
-    let d = Math.floor(remainingTime / 86400);
-    let h = Math.floor((remainingTime % 86400) / 3600);
-    let m = Math.floor((remainingTime % 3600) / 60);
-    let s = remainingTime % 60;
+    const d = Math.floor(remainingTime / 86400000);
+    const h = Math.floor((remainingTime % 86400000) / 3600000);
+    const m = Math.floor((remainingTime % 3600000) / 60000);
+    const s = Math.floor((remainingTime % 60000) / 1000);
 
-    // Update the timer display
     updateDisplay(d, h, m, s);
 
-    // Calculate progress for each unit of time
-    let daysProgress = d / (Math.floor(initialTime / 86400) || 1);
-    let hoursProgress = h / 24;
-    let minutesProgress = m / 60;
-    let secondsProgress = s / 60;
-
     // Update progress circles
-    updateProgress("days-circle", daysProgress);
-    updateProgress("hours-circle", hoursProgress);
-    updateProgress("minutes-circle", minutesProgress);
-    updateProgress("seconds-circle", secondsProgress);
-
-    // Decrement the remaining time by 1 second
-    remainingTime--;
+    updateProgress("days-circle", initialTime ? (1 - (remainingTime / initialTime)) : 0);
+    updateProgress("hours-circle", h / 24);
+    updateProgress("minutes-circle", m / 60);
+    updateProgress("seconds-circle", (remainingTime % 60000) / 60000);
 }
 
-// Function to update the displayed values for days, hours, minutes, and seconds
+// Update display values
 function updateDisplay(d, h, m, s) {
-    document.getElementById("days-display").innerHTML = d.toString().padStart(2, '0');
-    document.getElementById("hours-display").innerHTML = h.toString().padStart(2, '0');
-    document.getElementById("minutes-display").innerHTML = m.toString().padStart(2, '0');
-    document.getElementById("seconds-display").innerHTML = s.toString().padStart(2, '0');
+    const daysDisplay = document.getElementById("days-display");
+    const hoursDisplay = document.getElementById("hours-display");
+    const minutesDisplay = document.getElementById("minutes-display");
+    const secondsDisplay = document.getElementById("seconds-display");
+
+    if (daysDisplay) daysDisplay.innerHTML = d.toString().padStart(2, '0');
+    if (hoursDisplay) hoursDisplay.innerHTML = h.toString().padStart(2, '0');
+    if (minutesDisplay) minutesDisplay.innerHTML = m.toString().padStart(2, '0');
+    if (secondsDisplay) secondsDisplay.innerHTML = s.toString().padStart(2, '0');
 }
 
-// Function to update the progress circles (visual representation of the time)
+// Update progress circle
 function updateProgress(circleId, progress) {
     const circle = document.getElementById(circleId);
-    const offset = 339 - (339 * progress); // Calculate stroke offset based on progress
-    circle.style.strokeDashoffset = offset; // Apply the offset to the stroke
+    if (circle) {
+        const offset = 339 - (339 * Math.min(Math.max(progress, 0), 1));
+        circle.style.strokeDashoffset = offset;
+    }
 }
 
-// Function to reset all progress circles to zero
+// Reset all progress circles
 function updateAllProgress(value) {
-    updateProgress("days-circle", 0);
-    updateProgress("hours-circle", 0);
-    updateProgress("minutes-circle", 0);
-    updateProgress("seconds-circle", 0);
+    updateProgress("days-circle", value);
+    updateProgress("hours-circle", value);
+    updateProgress("minutes-circle", value);
+    updateProgress("seconds-circle", value);
 }
 
-// Function to show the notification when the countdown reaches zero
+// Show completion notification
 function showNotification() {
     const notification = document.getElementById("notification");
-    notification.classList.add("show"); // Show the notification
+    if (notification) {
+        notification.classList.add("show");
 
-    // Play sound when time is up
-    let alarmSound = new Audio('./Assets/timesup.mp3');
-    alarmSound.play();
+        const alarmSound = new Audio('./Assets/timesup.mp3');
+        alarmSound.play();
 
-    // After 3 seconds, remove the notification and open a new link
-    setTimeout(() => {
-        notification.classList.remove("show");
-        window.open("https://aquanix1024.vercel.app/", "_blank", 500);
-    }, 3000);
+        setTimeout(() => {
+            notification.classList.remove("show");
+            window.open("https://aquanix1024.vercel.app/", "_blank");
+        }, 3000);
+    }
 }
 
-// Event listener to validate input fields for time (prevents negative values and values exceeding max)
+// Input validation
 document.querySelectorAll('input[type="number"]').forEach(input => {
     input.addEventListener('input', function () {
         let value = parseInt(this.value) || 0;
-        let max = parseInt(this.getAttribute('max'));
+        const max = parseInt(this.getAttribute('max')) || Infinity;
 
-        if (max && value > max) {
-            this.value = max;
-        }
-        if (value < 0) {
-            this.value = 0;
-        }
+        if (value > max) this.value = max;
+        if (value < 0) this.value = 0;
     });
 });
 
-// Function to update the current date and time display
+// Update current date/time
 function updateDateTime() {
-    const now = new Date();
-    document.getElementById('datetime').textContent = now.toLocaleString();
-    setTimeout(updateDateTime, 1000); // Update every second
+    const datetime = document.getElementById('datetime');
+    if (datetime) {
+        datetime.textContent = new Date().toLocaleString();
+    }
+    setTimeout(updateDateTime, 1000);
 }
 
-// Initialize the date and time display
 updateDateTime();
